@@ -22,19 +22,12 @@ module ALU
 	input [3:0] ALUOperation,
 	input [31:0] A,
 	input [31:0] B,
-	input [4:0] shamt,
 	output reg Zero,
 	output reg [31:0]ALUResult
 );
 
-localparam ADD = 4'b0011; //ADDI
+localparam ADD = 4'b0011;
 localparam SUB = 4'b0100;
-localparam AND = 4'b1000;
-localparam OR  = 4'b0001; //ORI
-localparam NOR = 4'b1001;
-localparam SLL = 4'b1100;
-localparam SRL = 4'b0110;
-localparam LUI = 4'b1010;
    
    always @ (A or B or ALUOperation)
      begin
@@ -43,18 +36,7 @@ localparam LUI = 4'b1010;
 			ALUResult=A + B;
 		  SUB: // sub
 			ALUResult=A - B;
-		  AND: //and
-			ALUResult= A & B;
-		  OR:	 //or
-		   ALUResult = A|B;
-		  NOR: //nor
-		   ALUResult = ~(A|B);
-		  SLL: //sll
-			ALUResult = B << shamt;
-		  SRL: //srl
-		   ALUResult = B >> shamt; 
-		  LUI: //Lui
-		   ALUResult = {B[15:0], 16'b0};
+
 		default:
 			ALUResult= 0;
 		endcase // case(control)
