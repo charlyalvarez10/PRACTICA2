@@ -55,7 +55,18 @@ wire ORForBranch;
 wire ALUSrc_wire;
 wire RegWrite_wire;
 wire Zero_wire;
-wire [2:0] ALUOp_wire;
+wire [5:0] ALUOp_wire;
+
+//Cables añadidos
+wire MemRead_wire;
+wire MemtoReg_wire;
+wire MemWrite_wire;
+wire [31:0] ReadData_wire;
+wire [31:0] WriteData_wire;
+//
+
+
+
 wire [3:0] ALUOperation_wire;
 wire [4:0] WriteRegister_wire;
 wire [31:0] PC_Wire;
@@ -85,7 +96,10 @@ ControlUnit
 	.BranchNE(BranchNE_wire),
 	.BranchEQ(BranchEQ_wire),
 	.ALUSrc(ALUSrc_wire),
-	.RegWrite(RegWrite_wire)
+	.RegWrite(RegWrite_wire),
+	.MemRead(MemRead_wire), //Agregado
+	.MemtoReg(MemtoReg_wire), //Agregado
+	.MemWrite(MemWrite_wire) //Agregado
 );
 
 
@@ -148,9 +162,9 @@ Register_File
 	.WriteRegister(WriteRegister_wire),
 	.ReadRegister1(Instruction_wire[25:21]),
 	.ReadRegister2(Instruction_wire[20:16]),
-	.WriteData(ALUResult_wire),
 	.ReadData1(ReadData1_wire),
-	.ReadData2(ReadData2_wire)
+	.ReadData2(ReadData2_wire),
+	.WriteData(WriteData_wire) //Modificado para escribir de la memoria o ALUResult.
 
 );
 
@@ -186,6 +200,32 @@ ArithmeticLogicUnitControl
 	.ALUOperation(ALUOperation_wire)
 
 );
+
+Multiplexer2to1   //Agregado LW - SW
+#(
+	.NBits(32)
+	
+)						///////////
+
+MUX_ForWriteData						//Agregado LW-SW
+(
+	.Selector(MemtoReg_wire),
+	.MUX_Data0(ALUResult_wire),
+	.MUX_Data1(ReadData_wire),
+	.MUX_Output(WriteData_wire)
+);											/////////
+
+DataMemory								//Agregado LW-SW
+Data_Memory		
+(
+	.WriteData(ReadData2_wire),
+	.Address(ALUResult_wire),
+	.MemWrite(MemWrite_wire),
+	.MemRead(MemRead_wire),
+	.clk(clk),
+	.ReadData(ReadData_wire)
+);											////////////
+											
 
 
 

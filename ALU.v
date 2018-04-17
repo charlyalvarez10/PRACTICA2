@@ -35,6 +35,8 @@ localparam NOR = 4'b1001;
 localparam SLL = 4'b1100;
 localparam SRL = 4'b0110;
 localparam LUI = 4'b1010;
+localparam LW  = 4'b1110; //LW
+localparam SW  = 4'b1111; //SW
    
    always @ (A or B or ALUOperation)
      begin
@@ -55,6 +57,10 @@ localparam LUI = 4'b1010;
 		   ALUResult = B >> shamt; 
 		  LUI: //Lui
 		   ALUResult = {B[15:0], 16'b0};
+		  LW:  //LW
+			ALUResult = (( A + B ) - 32'h1001_0000 ) / 4; 
+		  SW:  //SW
+		   ALUResult = (( A + B ) - 32'h1001_0000 ) / 4; 
 		default:
 			ALUResult= 0;
 		endcase // case(control)
